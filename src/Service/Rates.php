@@ -1,9 +1,13 @@
 <?php
 
 namespace App\Service;
-
+use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 class Rates
 {
+    public function __construct(private readonly ContainerBagInterface $params,)
+    {
+
+    }
     public function getRates()
     {
         $result = '{
@@ -188,11 +192,11 @@ class Rates
         return json_decode($result, true);
     }
 
-    public function getRates_prod() {
+    public function getRates_dev() {
+        $url =  $this->params->get('app.url.rates');
         $curl = curl_init();
-
         curl_setopt_array($curl, array(
-            CURLOPT_URL => "https://api.apilayer.com/exchangerates_data/latest",
+            CURLOPT_URL => $url,
             CURLOPT_HTTPHEADER => array(
                 "Content-Type: text/plain",
                 "apikey: rIrJcjox69dUOUzuCctrdDqaetOhHY8U"
