@@ -11,12 +11,12 @@ class Countries
 
     }
 
-    public function getCountry_dev(string $bin): string
+    public function getCountry(string $bin): string
     {
         return '{"number":{},"scheme":"visa","type":"debit","brand":"Visa Classic","country":{"numeric":"208","alpha2":"DK","name":"Denmark","emoji":"🇩🇰","currency":"DKK","latitude":56,"longitude":10},"bank":{"name":"Jyske Bank A/S"}}';
     }
 
-    public function getCountry(string $bin_code): string
+    public function getCountry_dev(string $bin_code): string
     {
         $url =  $this->params->get('app.url.country');
         $curl = curl_init();

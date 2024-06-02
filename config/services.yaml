@@ -6,6 +6,7 @@
 parameters:
     app.url.trunsaction: '../var/data/input.txt'
     app.url.country: 'https://lookup.binlist.net/'
+    app.url.rates: 'https://api.apilayer.com/exchangerates_data/latest'
     app.es.country: ['AT','BE','BG','CY','CZ','DE','DK','EE','ES','FI','FR','GR','HR','HU','IE','IT','LT','LU','LV','MT','NL','PO','PT','RO','SE','SI','SK']
 services:
     # default configuration for services in *this* file
