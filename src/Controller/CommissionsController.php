@@ -36,6 +36,7 @@ public function __construct(
     #[Route('coms', name: 'app_coms')]
     public function getCommissions(): Response
     {
+        # calculate commissions
         $message = '';
         if (count($this->counties_number) > 0 ){
             $counties_number = $this->counties_number;
