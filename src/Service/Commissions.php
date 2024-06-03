@@ -20,8 +20,8 @@ class Commissions
     )
     {
         $this->currentTransactions = $transactions->getTransactions();
-        $this->freshRates = $rates->getRates();$rates->getRates();
-        $this->updateCurrensy($countries);
+        $this->freshRates = $rates->getRates();
+        $this->updateCurrency($countries);
 
     }
 
@@ -49,26 +49,28 @@ class Commissions
         return $message;
     }
 
-    private function updateCurrensy(Countries $countries):void
+    public function updateCurrency(Countries $countries):void
     {
         foreach ($this->currentTransactions as $key => $value) {
             $result = $countries->getCountry($value["bin"]);
             if($result !== ''){
                 $card = json_decode($result, true);
-                $this->countries_number[$value["bin"]]["country_id"] = $card["country"]["numeric"];
-                $this->countries_number[$value["bin"]]["amount"] = $value["amount"];
-                $country = $this->entityManager->getRepository(Currencies::class)->findOneBySomeField($card["country"]["numeric"]);
-                if($country === null) {
-                    $currency = new Currencies();
-                    $currency->setCountryId($card["country"]["numeric"]);
-                    $currency->setCountryName($card["country"]["name"]);
-                    $currency->setCurrencyName($card["country"]["currency"]);
-                    $es_countries = $this->params->get('app.es.country');
-                    $status = false;
-                    if (in_array($card["country"]["alpha2"], $es_countries, true)) { $status = true; };
-                    $currency->setStatus($status);
-                    $this->entityManager->persist($currency);
-                    $this->entityManager->flush();
+                if(count($card["country"]) > 0 ){
+                    $this->countries_number[$value["bin"]]["country_id"] = $card["country"]["numeric"];
+                    $this->countries_number[$value["bin"]]["amount"] = $value["amount"];
+                    $country = $this->entityManager->getRepository(Currencies::class)->findOneBySomeField($card["country"]["numeric"]);
+                    if($country === null) {
+                        $currency = new Currencies();
+                        $currency->setCountryId($card["country"]["numeric"]);
+                        $currency->setCountryName($card["country"]["name"]);
+                        $currency->setCurrencyName($card["country"]["currency"]);
+                        $es_countries = $this->params->get('app.es.country');
+                        $status = false;
+                        if (in_array($card["country"]["alpha2"], $es_countries, true)) { $status = true; };
+                        $currency->setStatus($status);
+                        $this->entityManager->persist($currency);
+                        $this->entityManager->flush();
+                    }
                 }
             }
         }

@@ -11,12 +11,15 @@ class Countries
 
     }
 
-    public function getCountry(string $bin): string
+    public function getCountry_test(string $bin): string
     {
-        return '{"number":{},"scheme":"visa","type":"debit","brand":"Visa Classic","country":{"numeric":"208","alpha2":"DK","name":"Denmark","emoji":"🇩🇰","currency":"DKK","latitude":56,"longitude":10},"bank":{"name":"Jyske Bank A/S"}}';
+        //return '{"number":{},"scheme":"visa","type":"debit","brand":"Visa Classic","country":{"numeric":"208","alpha2":"DK","name":"Denmark","emoji":"🇩🇰","currency":"DKK","latitude":56,"longitude":10},"bank":{"name":"Jyske Bank A/S"}}';
+        //return '{"number":{},"scheme":"mastercard","type":"debit","brand":"Debit Mastercard Unembossed","country":{"numeric":"440","alpha2":"LT","name":"Lithuania","emoji":"🇱🇹","currency":"EUR","latitude":56,"longitude":24},"bank":{"name":"Swedbank Ab"}}';
+        //return '{"number":{},"scheme":"visa","type":"credit","brand":"Visa Classic","country":{"numeric":"392","alpha2":"JP","name":"Japan","emoji":"🇯🇵","currency":"JPY","latitude":36,"longitude":138},"bank":{"name":"Credit Saison Co., Ltd."}}';
+        return '{"number":null,"country":{},"bank":{}}';
     }
 
-    public function getCountry_dev(string $bin_code): string
+    public function getCountry(string $bin_code): string
     {
         $url =  $this->params->get('app.url.country');
         $curl = curl_init();

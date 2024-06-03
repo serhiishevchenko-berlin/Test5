@@ -4,6 +4,7 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    app.api.key: 'rIrJcjox69dUOUzuCctrdDqaetOhHY8U'
     app.url.trunsaction: '../var/data/input.txt'
     app.url.country: 'https://lookup.binlist.net/'
     app.url.rates: 'https://api.apilayer.com/exchangerates_data/latest'
