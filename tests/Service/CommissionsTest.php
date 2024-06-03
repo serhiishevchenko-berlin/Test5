@@ -1,16 +1,19 @@
 <?php
+namespace App\Tests\Service;
+use App\Service\Commissions;
+use App\Service\Countries;
+use App\Service\Rates;
+use PHPUnit\Framework\TestCase;
 
-namespace App\Service;
-use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
-class Rates
+class CommissionsTest extends TestCase
 {
-    public function __construct(private readonly ContainerBagInterface $params,)
+    private Commissions $comissions;
+    public function setUp(): void
     {
-
-    }
-    public function getRates()
-    {
-        $result = '{
+        $ServiceCountries = $this->createStub(Countries::class);
+        $ServiceCountries->method('getCountry')->willReturn('{"number":{},"scheme":"visa","type":"debit","brand":"Visa Classic","country":{"numeric":"208","alpha2":"DK","name":"Denmark","emoji":"🇩🇰","currency":"DKK","latitude":56,"longitude":10},"bank":{"name":"Jyske Bank A/S"}}');
+        $ServiceRates = $this->createStub(Rates::class);
+        $ServiceRates->method('getRates')->willReturn('{
         "success": true,
         "timestamp": 1717093804,
         "base": "EUR",
@@ -188,33 +191,9 @@ class Rates
             "ZMW": 29.455749,
             "ZWL": 349.009491
         }
-    }';
-        return json_decode($result, true);
+    }');
+
     }
 
-    public function getRates_dev() {
-        $url =  $this->params->get('app.url.rates');
-        $api_key = $this->params->get('app.api.key');
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => $url,
-            CURLOPT_HTTPHEADER => array(
-                "Content-Type: text/plain",
-                "apikey: ".$api_key
-            ),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET"
-        ));
-
-        $response = curl_exec($curl);
-
-        curl_close($curl);
-        return json_decode($response, true);
-    }
 
 }
