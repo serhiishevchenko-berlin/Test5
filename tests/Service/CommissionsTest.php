@@ -1,199 +1,164 @@
 <?php
 namespace App\Tests\Service;
+
+use App\Entity\Currencies;
 use App\Service\Commissions;
 use App\Service\Countries;
 use App\Service\Rates;
+use App\Service\Transactions;
+use App\Repository\CurrenciesRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\DependencyInjection\ParameterBag\ContainerBagInterface;
 
 class CommissionsTest extends TestCase
 {
-    private Commissions $comissions;
-    public function setUp(): void
+    public function testCalculateCommissions(): void
     {
-        $ServiceCountries = $this->createStub(Countries::class);
-        $ServiceCountries->method('getCountry')->willReturn('{"number":{},"scheme":"visa","type":"debit","brand":"Visa Classic","country":{"numeric":"208","alpha2":"DK","name":"Denmark","emoji":"🇩🇰","currency":"DKK","latitude":56,"longitude":10},"bank":{"name":"Jyske Bank A/S"}}');
-        $ServiceRates = $this->createStub(Rates::class);
-        $ServiceRates->method('getRates')->willReturn('{
-        "success": true,
-        "timestamp": 1717093804,
-        "base": "EUR",
-        "date": "2024-05-30",
-        "rates": {
-            "AED": 3.980992,
-            "AFN": 76.955629,
-            "ALL": 101.289012,
-            "AMD": 420.892701,
-            "ANG": 1.953496,
-            "AOA": 927.263196,
-            "ARS": 969.49202,
-            "AUD": 1.632359,
-            "AWG": 1.953697,
-            "AZN": 1.855616,
-            "BAM": 1.959709,
-            "BBD": 2.188565,
-            "BDT": 127.253805,
-            "BGN": 1.955974,
-            "BHD": 0.408552,
-            "BIF": 3121.579526,
-            "BMD": 1.083882,
-            "BND": 1.464621,
-            "BOB": 7.489939,
-            "BRL": 5.640198,
-            "BSD": 1.083862,
-            "BTC": 1.5639319e-05,
-            "BTN": 90.270042,
-            "BWP": 14.827573,
-            "BYN": 3.546674,
-            "BYR": 21244.082889,
-            "BZD": 2.184858,
-            "CAD": 1.481872,
-            "CDF": 3061.96604,
-            "CHF": 0.979393,
-            "CLF": 0.036011,
-            "CLP": 993.637981,
-            "CNY": 7.84081,
-            "CNH": 7.861617,
-            "COP": 4192.725696,
-            "CRC": 564.626135,
-            "CUC": 1.083882,
-            "CUP": 28.722867,
-            "CVE": 110.799789,
-            "CZK": 24.720959,
-            "DJF": 192.627475,
-            "DKK": 7.458842,
-            "DOP": 64.219591,
-            "DZD": 145.941482,
-            "EGP": 51.212502,
-            "ERN": 16.258227,
-            "ETB": 62.160537,
-            "EUR": 1,
-            "FJD": 2.44687,
-            "FKP": 0.862877,
-            "GBP": 0.850934,
-            "GEL": 3.029454,
-            "GGP": 0.862877,
-            "GHS": 15.98748,
-            "GIP": 0.862877,
-            "GMD": 73.432651,
-            "GNF": 9321.383534,
-            "GTQ": 8.42134,
-            "GYD": 226.892533,
-            "HKD": 8.472509,
-            "HNL": 26.863157,
-            "HRK": 7.565447,
-            "HTG": 143.93708,
-            "HUF": 389.356404,
-            "IDR": 17570.86173,
-            "ILS": 4.015283,
-            "IMP": 0.862877,
-            "INR": 90.292551,
-            "IQD": 1419.885132,
-            "IRR": 45753.352143,
-            "ISK": 148.69803,
-            "JEP": 0.862877,
-            "JMD": 168.896861,
-            "JOD": 0.768365,
-            "JPY": 169.945619,
-            "KES": 140.904479,
-            "KGS": 95.057117,
-            "KHR": 4436.327949,
-            "KMF": 492.35359,
-            "KPW": 975.493274,
-            "KRW": 1490.695134,
-            "KWD": 0.332556,
-            "KYD": 0.903302,
-            "KZT": 483.096898,
-            "LAK": 23298.039032,
-            "LBP": 97061.613106,
-            "LKR": 327.182559,
-            "LRD": 210.272977,
-            "LSL": 19.94315,
-            "LTL": 3.200421,
-            "LVL": 0.65563,
-            "LYD": 5.262284,
-            "MAD": 10.802505,
-            "MDL": 19.190275,
-            "MGA": 4812.435122,
-            "MKD": 61.70448,
-            "MMK": 2276.239914,
-            "MNT": 3739.391896,
-            "MOP": 8.727607,
-            "MRU": 42.86761,
-            "MUR": 50.114072,
-            "MVR": 16.745603,
-            "MWK": 1877.869185,
-            "MXN": 18.373529,
-            "MYR": 5.098564,
-            "MZN": 68.816541,
-            "NAD": 19.919224,
-            "NGN": 1566.20912,
-            "NIO": 39.843013,
-            "NOK": 11.420998,
-            "NPR": 144.432067,
-            "NZD": 1.769995,
-            "OMR": 0.417236,
-            "PAB": 1.083862,
-            "PEN": 4.078108,
-            "PGK": 4.215208,
-            "PHP": 63.328504,
-            "PKR": 301.80714,
-            "PLN": 4.280636,
-            "PYG": 8178.311475,
-            "QAR": 3.946684,
-            "RON": 4.976752,
-            "RSD": 117.125371,
-            "RUB": 97.093963,
-            "RWF": 1410.130196,
-            "SAR": 4.065319,
-            "SBD": 9.186099,
-            "SCR": 15.635001,
-            "SDG": 651.41302,
-            "SEK": 11.485071,
-            "SGD": 1.462812,
-            "SHP": 1.369431,
-            "SLE": 24.763775,
-            "SLL": 22728.460005,
-            "SOS": 618.89653,
-            "SRD": 34.837583,
-            "STD": 22434.164498,
-            "SVC": 9.483915,
-            "SYP": 2723.285332,
-            "SZL": 19.943025,
-            "THB": 39.767749,
-            "TJS": 11.624986,
-            "TMT": 3.804425,
-            "TND": 3.378418,
-            "TOP": 2.560183,
-            "TRY": 34.890664,
-            "TTD": 7.355671,
-            "TWD": 35.07661,
-            "TZS": 2818.092597,
-            "UAH": 43.910779,
-            "UGX": 4140.257659,
-            "USD": 1.083882,
-            "UYU": 41.783336,
-            "UZS": 13716.523634,
-            "VEF": 3926418.689278,
-            "VES": 39.524604,
-            "VND": 27595.63012,
-            "VUV": 128.680602,
-            "WST": 3.038221,
-            "XAF": 657.267907,
-            "XAG": 0.034702,
-            "XAU": 0.000463,
-            "XCD": 2.929245,
-            "XDR": 0.819034,
-            "XOF": 655.204657,
-            "XPF": 119.331742,
-            "YER": 271.431084,
-            "ZAR": 20.266095,
-            "ZMK": 9756.235065,
-            "ZMW": 29.455749,
-            "ZWL": 349.009491
-        }
-    }');
+        // Mock dependencies
+        $transactionsMock = $this->createMock(Transactions::class);
+        $transactionsMock->method('getTransactions')
+            ->willReturn([
+                ['bin' => '45717360', 'amount' => 100.00, 'currency' => 'EUR'],
+                ['bin' => '516793', 'amount' => 50.00, 'currency' => 'USD'],
+                ['bin' => '45417360', 'amount' => 10000.00, 'currency' => 'JPY'],
+                ['bin' => '41417360', 'amount' => 130.00, 'currency' => 'USD'],
+                ['bin' => '4745030', 'amount' => 2000.00, 'currency' => 'GBP'],
+            ]);
 
+        $countriesMock = $this->createMock(Countries::class);
+        $countriesMock->method('getCountry')
+            ->willReturnCallback(function ($bin) {
+                $countryData = [
+                    '45717360' => '{"country":{"numeric":"208","alpha2":"DK","name":"Spain","currency":"DKK"}}',
+                    '516793' => '{"country":{"numeric":"440","alpha2":"LT","name":"Lithuania","currency":"EUR"}}',
+                ];
+                return $countryData[$bin] ?? '';
+            });
+
+        $ratesMock = $this->createMock(Rates::class);
+        $ratesMock->method('getRates')
+            ->willReturn([
+                'success' => true,
+                'timestamp' => time(),
+                'rates' => [
+                    'EUR' => 1,
+                    'USD' => 1.083882,
+                    'DKK' => 7.458842,
+                    'JPY' => 169.945619
+                ],
+            ]);
+
+        $entityManagerMock = $this->createMock(EntityManagerInterface::class);
+        $entityManagerMock->method('getRepository')
+            ->willReturnCallback(function ($class) {
+                $repositoryMock = $this->createMock(CurrenciesRepository::class);
+                $repositoryMock->method('findOneBySomeField')
+                    ->willReturnCallback(function ($countryId) use ($class) {
+                        if ($class === Currencies::class) {
+                            $currency = new Currencies();
+                            $currency->setCountryId($countryId);
+                            $status = true;
+                            $rate = 1;
+                            if($countryId === 392) { $rate = 169.945619; $status = false; }
+                            if($countryId === 208) { $rate = 7.458842;}
+                            $currency->setRate($rate);
+                            $currency->setStatus($status);
+                            return $currency;
+                        }
+                        return null;
+                    });
+                return $repositoryMock;
+            });
+
+        $containerBagMock = $this->createMock(ContainerBagInterface::class);
+        $containerBagMock->method('get')->with('app.es.country')->willReturn(['AT','BE','BG','CY','CZ','DE','DK','EE','ES','FI','FR','GR','HR','HU','IE','IT','LT','LU','LV','MT','NL','PO','PT','RO','SE','SI','SK']
+        );
+
+        // Create the Commissions service and test the calculateCommissions method
+        $commissions = new Commissions(
+            $transactionsMock,
+            $countriesMock,
+            $ratesMock,
+            $entityManagerMock,
+            $containerBagMock
+        );
+
+        $message = $commissions->calculateCommissions();
+        $this->assertStringContainsString('<br>Card number = 45717360 Commission = 1<br>', $message);
+        $this->assertStringContainsString('<br>Card number = 516793 Commission = 0.5<br>', $message);
     }
 
+    public function testCalculateCommissionsWithEmptyCountry(): void
+    {
+        // Mock dependencies
+        $transactionsMock = $this->createMock(Transactions::class);
+        $transactionsMock->method('getTransactions')
+            ->willReturn([
+                ['bin' => '45717360', 'amount' => 100.00, 'currency' => 'EUR'],
+                ['bin' => '516793', 'amount' => 50.00, 'currency' => 'USD'],
+                ['bin' => '45417360', 'amount' => 10000.00, 'currency' => 'JPY'],
+                ['bin' => '41417360', 'amount' => 130.00, 'currency' => 'USD'],
+                ['bin' => '4745030', 'amount' => 2000.00, 'currency' => 'GBP'],
+            ]);
 
+        $countriesMock = $this->createMock(Countries::class);
+        $countriesMock->method('getCountry')
+            ->willReturnCallback(function ($bin) {
+                $countryData = [];
+                return $countryData[$bin] ?? '';
+            });
+
+        $ratesMock = $this->createMock(Rates::class);
+        $ratesMock->method('getRates')
+            ->willReturn([
+                'success' => true,
+                'timestamp' => time(),
+                'rates' => [
+                    'EUR' => 1,
+                    'USD' => 1.083882,
+                    'DKK' => 7.458842,
+                    'JPY' => 169.945619
+                ],
+            ]);
+
+        $entityManagerMock = $this->createMock(EntityManagerInterface::class);
+        $entityManagerMock->method('getRepository')
+            ->willReturnCallback(function ($class) {
+                $repositoryMock = $this->createMock(CurrenciesRepository::class);
+                $repositoryMock->method('findOneBySomeField')
+                    ->willReturnCallback(function ($countryId) use ($class) {
+                        if ($class === Currencies::class) {
+                            $currency = new Currencies();
+                            $currency->setCountryId($countryId);
+                            $status = true;
+                            $rate = 1;
+                            //echo '<br> countryId = ',$countryId;
+                            if($countryId === 392) { $rate = 169.945619; $status = false; }
+                            if($countryId === 208) { $rate = 7.458842;}
+                            $currency->setRate($rate);
+                            $currency->setStatus($status);
+                            return $currency;
+                        }
+                        return null;
+                    });
+                return $repositoryMock;
+            });
+
+        $containerBagMock = $this->createMock(ContainerBagInterface::class);
+        $containerBagMock->method('get')->with('app.es.country')->willReturn(['AT','BE','BG','CY','CZ','DE','DK','EE','ES','FI','FR','GR','HR','HU','IE','IT','LT','LU','LV','MT','NL','PO','PT','RO','SE','SI','SK']
+        );
+
+        // Create the Commissions service and test the calculateCommissions method
+        $commissions = new Commissions(
+            $transactionsMock,
+            $countriesMock,
+            $ratesMock,
+            $entityManagerMock,
+            $containerBagMock
+        );
+
+        $message = $commissions->calculateCommissions();
+        $this->assertStringContainsString('The server lookup.binlist.net is unavailable! Too many requests.', $message);
+    }
 }
