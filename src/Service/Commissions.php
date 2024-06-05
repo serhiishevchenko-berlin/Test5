@@ -56,10 +56,12 @@ class Commissions
             if($result !== ''){
                 $card = json_decode($result, true);
                 if(count($card["country"]) > 0 ){
+                    // fill array $countries_number
                     $this->countries_number[$value["bin"]]["country_id"] = $card["country"]["numeric"];
                     $this->countries_number[$value["bin"]]["amount"] = $value["amount"];
                     $country = $this->entityManager->getRepository(Currencies::class)->findOneBySomeField($card["country"]["numeric"]);
                     if($country === null) {
+                        // Add new country
                         $currency = new Currencies();
                         $currency->setCountryId($card["country"]["numeric"]);
                         $currency->setCountryName($card["country"]["name"]);
@@ -76,6 +78,7 @@ class Commissions
         }
         $result = $this->entityManager->getRepository(Currencies::class)->findByExampleField(0);
         if($this->freshRates["success"]) {
+            // Update currency rate
             $date = new DateTimeImmutable();
             foreach ($result as $value){
                 $currency = $this->entityManager->getRepository(Currencies::class)->find($value->getId());

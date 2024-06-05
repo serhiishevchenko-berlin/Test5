@@ -8,7 +8,7 @@ class Rates
     {
 
     }
-    public function getRates()
+    public function getRates_test()
     {
         $result = '{
         "success": true,
@@ -192,7 +192,7 @@ class Rates
         return json_decode($result, true);
     }
 
-    public function getRates_dev() {
+    public function getRates() {
         $url =  $this->params->get('app.url.rates');
         $api_key = $this->params->get('app.api.key');
         $curl = curl_init();
