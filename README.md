@@ -1,4 +1,4 @@
-# Test task
+# Test task.
 Calculates commissions on the transactions
 
 # How to run
